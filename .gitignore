@@ -1,1 +1,50 @@
-/target
+# Rust
+/target/
+**/*.rs.bk
+
+# SQLite Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Environment files
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS generated files
+.AppleDouble
+.LSOverride
+
+# Backup files
+*.bak
+*.backup
+
+# Development database (keep production DB configs)
+portfolio.db*
+
+# Local development overrides
+.env.development.local
