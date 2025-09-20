@@ -1,0 +1,313 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ project.title }} - Austin Couch{% endblock %}
+
+{% block description %}{{ project.short_desc }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-separator">→</span>
+        <a href="/projects" class="breadcrumb-link">Projects</a>
+        <span class="breadcrumb-separator">→</span>
+        <span class="breadcrumb-current">{{ project.title }}</span>
+    </nav>
+    
+    <!-- Project Header -->
+    <header class="project-detail-header">
+        <div class="project-header-content">
+            <h1 class="project-detail-title">{{ project.title }}</h1>
+            <span class="project-category">{{ project.category }}</span>
+        </div>
+        
+        <div class="project-meta">
+            <time class="project-date">
+                {{ project.created_at }}
+            </time>
+        </div>
+    </header>
+    
+    <!-- Project Content -->
+    <div class="project-detail-content">
+        <div class="project-main">
+            <div class="project-description-full">
+                <!-- Convert newlines to paragraphs for better formatting -->
+                {% for paragraph in project.long_desc.split('\n\n') %}
+                {% if paragraph.trim() != "" %}
+                <p>{{ paragraph.trim() }}</p>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+        <aside class="project-sidebar">
+            <!-- Tags -->
+            <div class="sidebar-section">
+                <h3>Technologies</h3>
+                <div class="project-tags">
+                    {% for tag in project.parsed_tags() %}
+                    <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Links -->
+            <div class="sidebar-section">
+                <h3>Links</h3>
+                <div class="project-links-sidebar">
+                    {% if project.github_url %}
+                    <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                    {% endif %}
+                    {% if project.live_url %}
+                    <a href="{{ project.live_url }}" target="_blank" rel="noopener" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                        </svg>
+                        Live Demo
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Project Info -->
+            <div class="sidebar-section">
+                <h3>Project Info</h3>
+                <dl class="project-info">
+                    <dt>Category</dt>
+                    <dd>{{ project.category }}</dd>
+                    <dt>Created</dt>
+                    <dd>{{ project.created_at }}</dd>
+                    {% if project.featured %}
+                    <dt>Status</dt>
+                    <dd><span class="featured-badge">Featured Project</span></dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- Navigation to other projects -->
+    <nav class="project-navigation">
+        <a href="/projects" class="nav-button">
+            ← Back to All Projects
+        </a>
+        <a href="/projects?category={{ project.category }}" class="nav-button">
+            More {{ project.category }} Projects →
+        </a>
+    </nav>
+</div>
+
+<style>
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.breadcrumb-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.breadcrumb-link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+}
+
+.project-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+}
+
+.project-header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.project-detail-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.project-date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.project-detail-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.project-description-full {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+}
+
+.project-description-full p {
+    margin-bottom: var(--spacing-lg);
+}
+
+.project-sidebar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--spacing-lg) + 80px); /* Account for sticky header */
+}
+
+.sidebar-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.sidebar-section:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.project-links-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-decoration: none;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.sidebar-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.project-info {
+    font-size: 0.875rem;
+}
+
+.project-info dt {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.project-info dd {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.featured-badge {
+    background: var(--gradient);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.project-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+    gap: var(--spacing-md);
+}
+
+.nav-button {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-decoration: none;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.nav-button:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .project-detail-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+    
+    .project-detail-title {
+        font-size: 2rem;
+    }
+    
+    .project-detail-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .project-sidebar {
+        position: static;
+    }
+    
+    .project-navigation {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .nav-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
