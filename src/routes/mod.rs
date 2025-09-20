@@ -39,7 +39,7 @@ struct ProjectFragmentTemplate {
 }
 
 #[derive(Debug, Deserialize)]
-struct ProjectsQueryParams {
+pub struct ProjectsQueryParams {
     category: Option<String>,
     fragment: Option<bool>,
 }

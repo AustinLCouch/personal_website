@@ -61,8 +61,7 @@ impl Project {
 
     /// Get featured projects for homepage
     pub async fn featured(pool: &SqlitePool) -> Result<Vec<Project>> {
-        let projects = sqlx::query_as!(
-            Project,
+        let projects = sqlx::query_as::<_, Project>(
             "SELECT * FROM projects WHERE featured = true ORDER BY created_at DESC"
         )
         .fetch_all(pool)
@@ -73,11 +72,10 @@ impl Project {
 
     /// Find project by slug
     pub async fn find_by_slug(pool: &SqlitePool, slug: &str) -> Result<Option<Project>> {
-        let project = sqlx::query_as!(
-            Project,
-            "SELECT * FROM projects WHERE slug = ?",
-            slug
+        let project = sqlx::query_as::<_, Project>(
+            "SELECT * FROM projects WHERE slug = ?"
         )
+        .bind(slug)
         .fetch_optional(pool)
         .await?;
 
@@ -86,7 +84,7 @@ impl Project {
 
     /// Get all unique categories
     pub async fn categories(pool: &SqlitePool) -> Result<Vec<String>> {
-        let categories = sqlx::query_scalar!(
+        let categories = sqlx::query_scalar::<_, String>(
             "SELECT DISTINCT category FROM projects ORDER BY category"
         )
         .fetch_all(pool)
@@ -98,6 +96,26 @@ impl Project {
     /// Parse tags from JSON string
     pub fn parsed_tags(&self) -> Vec<String> {
         serde_json::from_str(&self.tags).unwrap_or_default()
+    }
+
+    /// Check if project has github URL
+    pub fn has_github_url(&self) -> bool {
+        self.github_url.is_some()
+    }
+
+    /// Check if project has live URL
+    pub fn has_live_url(&self) -> bool {
+        self.live_url.is_some()
+    }
+
+    /// Get github URL or empty string
+    pub fn github_url_or_empty(&self) -> &str {
+        self.github_url.as_deref().unwrap_or("")
+    }
+
+    /// Get live URL or empty string  
+    pub fn live_url_or_empty(&self) -> &str {
+        self.live_url.as_deref().unwrap_or("")
     }
 }
 
