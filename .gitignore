@@ -48,3 +48,14 @@ portfolio.db*
 
 # Local development overrides
 .env.development.local
+
+# Deployment files
+*.tar.gz
+nginx/conf.d/*.conf.bak
+docker-compose.yml.bak
+
+# SSL certificates and keys (if stored locally)
+ssl/
+certs/
+*.pem
+*.key
